@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indie Sudoku - 獨立樂團風數短遊戲</title>
+    <title>我們的靈魂樂 - Indie Sudoku</title>
     <style>
         :root {
-            --bg-color: #F4F1EA;
-            --card-bg: #EAE3D2;
-            --text-color: #2B2B2B;
-            --accent-color: #D95D39;
-            --border-color: #2B2B2B;
+            /* 透明雜誌《我們的靈魂樂》風格色調：重度龐克黑、仿舊紙張米白、復古亮橘與靈魂藍 */
+            --bg-color: #EFECE6;
+            --card-bg: #FFFFFF;
+            --text-color: #111111;
+            --border-color: #111111;
+            --accent-color: #D9381E; /* 經典龐克紅橘 */
+            --secondary-color: #234E70; /* 靈魂樂復古藍 */
             --error-color: #C0392B;
-            --success-color: #4A5D4E;
-            --muted-color: #706E6B;
+            --fixed-bg: #E4E0D8;
+            --selected-bg: #F3D250; /* 復古唱片黃 */
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Courier New', Courier, monospace, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -31,9 +33,9 @@
 
         .game-container {
             background-color: var(--card-bg);
-            border: 3px solid var(--border-color);
+            border: 4px solid var(--border-color);
             padding: 25px;
-            box-shadow: 6px 6px 0px var(--border-color);
+            box-shadow: 8px 8px 0px var(--border-color);
             max-width: 450px;
             width: 100%;
             box-sizing: border-box;
@@ -41,10 +43,19 @@
         }
 
         h1 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             margin-top: 0;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
             letter-spacing: 2px;
+            font-weight: 900;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
             border-bottom: 2px dashed var(--border-color);
             padding-bottom: 10px;
         }
@@ -65,18 +76,18 @@
             font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 2px 2px 0px var(--border-color);
-            transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 3px 3px 0px var(--border-color);
+            transition: transform 0.05s, box-shadow 0.05s;
         }
 
         button:hover {
-            background-color: var(--accent-color);
+            background-color: var(--secondary-color);
             color: #FFF;
         }
 
         button:active {
             transform: translate(2px, 2px);
-            box-shadow: none;
+            box-shadow: 1px 1px 0px var(--border-color);
         }
 
         button.active-mode {
@@ -87,11 +98,12 @@
         .stats {
             display: flex;
             justify-content: space-between;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             margin-bottom: 15px;
             font-weight: bold;
             border-top: 2px dashed var(--border-color);
-            padding-top: 10px;
+            border-bottom: 2px dashed var(--border-color);
+            padding: 8px 0;
         }
 
         /* 數獨 9x9 網格排版 */
@@ -106,80 +118,63 @@
         }
 
         .cell {
-            background-color: var(--bg-color);
+            background-color: var(--card-bg);
             aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: bold;
             cursor: pointer;
             user-select: none;
             position: relative;
         }
 
-        /* 九宮格粗線條切分 */
+        /* 3x3 九宮格粗線條分隔視覺強化 */
         .cell:nth-child(3n) {
             border-right: 2px solid var(--border-color);
         }
         .cell:nth-child(9n) {
             border-right: none;
         }
-        .sudoku-grid > div:nth-n(27) { /* 視覺微調可依需求調整 */ }
 
         .cell.selected {
-            background-color: #D6CDB8;
+            background-color: var(--selected-bg);
         }
 
         .cell.fixed {
             color: var(--text-color);
-            background-color: #E2DBD0;
+            background-color: var(--fixed-bg);
         }
 
         .cell.user-input {
-            color: var(--accent-color);
+            color: var(--secondary-color);
         }
 
         .cell.error {
             color: var(--error-color);
-            background-color: #F8D7DA;
-        }
-
-        /* 筆記模式格內 3x3 小數字樣式 */
-        .notes-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            width: 100%;
-            height: 100%;
-            font-size: 0.45rem;
-            color: var(--muted-color);
-            line-height: 1;
-        }
-
-        .notes-grid span {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #FADBD8;
         }
 
         .number-pad {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
-            gap: 5px;
+            gap: 4px;
             margin-bottom: 15px;
         }
 
         .number-pad button {
-            padding: 10px 0;
-            font-size: 1.1rem;
+            padding: 8px 0;
+            font-size: 1rem;
+            box-shadow: 2px 2px 0px var(--border-color);
         }
     </style>
 </head>
 <body>
 
     <div class="game-container">
-        <h1>// INDIE SUDOKU //</h1>
+        <h1>OUR SOUL MUSIC</h1>
+        <div class="subtitle">// 我們的靈魂樂：數獨挑戰 //</div>
         
         <!-- 難度與重開局 -->
         <div class="controls">
@@ -214,9 +209,9 @@
 
         <!-- 功能操作列 -->
         <div class="action-bar">
-            <button id="btn-note" onclick="toggleNoteMode()">筆記模式: 關</button>
+            <button id="btn-note" onclick="toggleNoteMode()">筆記: 關</button>
             <button onclick="clearCell()">清除</button>
-            <button onclick="checkSolution()">檢查解答</button>
+            <button onclick="checkSolution()">檢查</button>
             <button onclick="revealSolution()">看答案</button>
         </div>
     </div>
@@ -224,7 +219,6 @@
     <script>
         let board = Array(9).fill(0).map(() => Array(9).fill(0));
         let solution = Array(9).fill(0).map(() => Array(9).fill(0));
-        let notes = Array(9).fill(0).map(() => Array(9).fill(() => Set())); // 候選數
         let selectedCell = null;
         let isNoteMode = false;
         let difficulty = 'medium';
@@ -232,7 +226,6 @@
         let secondsElapsed = 0;
         let errorCount = 0;
 
-        // 簡易預設題庫與挖空邏輯（實務上可透過標準數獨產生器替換）
         const sampleSolutions = [
             [
                 [5,3,4,6,7,8,9,1,2],
@@ -248,13 +241,10 @@
         ];
 
         function initGame() {
-            // 載入預設解答並依難度挖空
             solution = sampleSolutions[0];
             let removeCount = difficulty === 'easy' ? 30 : difficulty === 'medium' ? 45 : 55;
-            
             board = solution.map(row => [...row]);
             
-            // 隨機挖空
             let removed = 0;
             while(removed < removeCount) {
                 let r = Math.floor(Math.random() * 9);
@@ -265,7 +255,6 @@
                 }
             }
 
-            // 重置狀態
             errorCount = 0;
             document.getElementById('errors').innerText = errorCount;
             secondsElapsed = 0;
@@ -286,12 +275,10 @@
 
                     if (board[r][c] !== 0) {
                         cell.innerText = board[r][c];
-                        // 判斷是否為初始題目
                         if (solution[r][c] === board[r][c]) {
                             cell.classList.add('fixed');
                         } else {
                             cell.classList.add('user-input');
-                            // 即時錯誤檢查
                             if (board[r][c] !== solution[r][c]) {
                                 cell.classList.add('error');
                             }
@@ -317,15 +304,9 @@
             if (!selectedCell) return;
             let { r, c } = selectedCell;
             
-            // 若為固定初始格子則不能修改
-            if (solution[r][c] === board[r][c] && board[r][c] !== 0 && board[r][c] === solution[r][c]) {
-                return;
-            }
+            if (solution[r][c] === board[r][c] && board[r][c] !== 0) return;
 
-            if (isNoteMode) {
-                // 筆記模式邏輯（簡化版點擊切換）
-                // 這裡可以擴充候選數顯示
-            } else {
+            if (!isNoteMode) {
                 board[r][c] = num;
                 if (num !== solution[r][c]) {
                     errorCount++;
@@ -347,7 +328,7 @@
         function toggleNoteMode() {
             isNoteMode = !isNoteMode;
             const btn = document.getElementById('btn-note');
-            btn.innerText = `筆記模式: ${isNoteMode ? '開' : '關'}`;
+            btn.innerText = `筆記: ${isNoteMode ? '開' : '關'}`;
             btn.classList.toggle('active-mode', isNoteMode);
         }
 
@@ -395,7 +376,6 @@
             }
         }
 
-        // 初始化啟動
         initGame();
     </script>
 </body>
